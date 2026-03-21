@@ -1,16 +1,28 @@
+#include "src/app/cli.h"
+#include "src/app/application.h"
+#include "src/asset/asset_scanner.h"
 #include <iostream>
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-int main() {
-    // TIP Press <shortcut actionId="RenameElement"/> when your caret is at the <b>lang</b> variable name to see how CLion can help you rename it.
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
-
-    for (int i = 1; i <= 5; i++) {
-        // TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        std::cout << "i = " << i << std::endl;
+int main(int argc, char* argv[]) {
+    auto cli_result = fx::parse_args(argc, argv);
+    if (!cli_result.success) {
+        std::cerr << cli_result.error_message << std::endl;
+        return cli_result.exit_code;
     }
 
+    auto assets = fx::scan_directory(cli_result.directory_path);
+
+    std::string title = "fx-movies - " + cli_result.directory_path.string();
+
+    fx::Application app;
+    if (!app.init(title)) {
+        std::cerr << "Error: Failed to initialize application window" << std::endl;
+        return 1;
+    }
+
+    app.set_assets(std::move(assets));
+    app.run();
+    app.shutdown();
+
     return 0;
-    // TIP See CLion help at <a href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>. Also, you can try interactive lessons for CLion by selecting 'Help | Learn IDE Features' from the main menu.
 }
