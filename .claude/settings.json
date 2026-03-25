@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__spedy__*"
+    ]
+  },
+  "mcpServers": {
+    "spedy": {
+      "type": "http",
+      "url": "http://localhost:9100/mcp?ticketId=cmn65wl7v001durun0gihpgq9\u0026boardId=cmn5vq0sx003okgfxvxnhsuhg\u0026jobId=cmn6bhf8i00b9mgc668qiyx9c"
+    }
+  }
+}
