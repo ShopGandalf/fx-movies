@@ -5,11 +5,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # ---------------------------------------------------------------------------
-# fx_ui — core UI library (Menu, MenuItem, Command)
+# fx_ui — core UI library (Menu, MenuItem, Command, HelpWindow)
 # ---------------------------------------------------------------------------
 add_library(fx_ui
     src/ui/menu_item.cpp
     src/ui/menu.cpp
+    src/ui/help_window.cpp
 )
 target_include_directories(fx_ui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 

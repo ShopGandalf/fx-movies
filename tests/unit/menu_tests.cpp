@@ -3,6 +3,7 @@
 #include "ui/command.h"
 #include "ui/menu_item.h"
 #include "ui/menu.h"
+#include "ui/help_window.h"
 
 using namespace fx;
 
@@ -205,4 +206,71 @@ TEST(MenuIntegrationTest, DisabledHelpItemDoesNotOpenWindow) {
 
     help.items()[0].trigger();
     EXPECT_FALSE(help_opened);
+}
+
+// ---------------------------------------------------------------------------
+// HelpWindow — state machine
+// ---------------------------------------------------------------------------
+
+TEST(HelpWindowTest, ClosedByDefault) {
+    HelpWindow w;
+    EXPECT_FALSE(w.is_open());
+}
+
+TEST(HelpWindowTest, OpenSetsIsOpen) {
+    HelpWindow w;
+    w.open();
+    EXPECT_TRUE(w.is_open());
+}
+
+TEST(HelpWindowTest, CloseResetsIsOpen) {
+    HelpWindow w;
+    w.open();
+    w.close();
+    EXPECT_FALSE(w.is_open());
+}
+
+TEST(HelpWindowTest, CustomTitle) {
+    HelpWindow w("About fx-movies");
+    // title is used by render(); constructor must not throw
+    EXPECT_FALSE(w.is_open());
+}
+
+// ---------------------------------------------------------------------------
+// HelpWindow — open_command() integration
+// ---------------------------------------------------------------------------
+
+TEST(HelpWindowTest, OpenCommandOpensWindow) {
+    HelpWindow w;
+    auto cmd = w.open_command();
+    ASSERT_NE(cmd, nullptr);
+    EXPECT_TRUE(cmd->can_execute());
+    cmd->execute();
+    EXPECT_TRUE(w.is_open());
+}
+
+TEST(HelpWindowTest, OpenCommandCanBeTriggeredViaMenuItem) {
+    HelpWindow w;
+    MenuItem item("Show Help", w.open_command(), "F1");
+    EXPECT_TRUE(item.can_trigger());
+    item.trigger();
+    EXPECT_TRUE(w.is_open());
+}
+
+TEST(HelpWindowTest, OpenCommandCanBeAddedToHelpMenu) {
+    HelpWindow w;
+
+    Menu help("Help");
+    help.add_item(MenuItem("Show Help", w.open_command(), "F1"));
+
+    ASSERT_EQ(help.items().size(), 1u);
+    help.items()[0].trigger();
+    EXPECT_TRUE(w.is_open());
+}
+
+TEST(HelpWindowTest, MultipleOpenCallsAreIdempotent) {
+    HelpWindow w;
+    w.open();
+    w.open();
+    EXPECT_TRUE(w.is_open());
 }
